@@ -17,15 +17,23 @@ class Bybit:
     exchangeInfo = {
         "tickers": ["BTCUSD", "ETHUSD", "XRPUSD", "EOSUSD"],
         "BTCUSD": {
+            "base": "BTC",
+            "quote": "USD",
             "maintenanceMarginRate": 0.005
         },
         "ETHUSD": {
+            "base": "ETH",
+            "quote": "USD",
             "maintenanceMarginRate": 0.01
         },
         "XRPUSD": {
+            "base": "XRP",
+            "quote": "USD",
             "maintenanceMarginRate": 0.01
         },
         "EOSUSD": {
+            "base": "EOS",
+            "quote": "USD",
             "maintenanceMarginRate": 0.01
         }
     }
@@ -114,5 +122,16 @@ class Bybit:
             raise Exception("param [side] not valid")
 
         return pl
+
+    @staticmethod
+    def getTickerBaseQuote(ticker):
+        """
+        Gets the base and quote currency of ticker
+
+        Return
+        ------
+            list
+        """
+        return [Bybit.exchangeInfo[ticker]["base"], Bybit.exchangeInfo[ticker]["quote"]]
 
         

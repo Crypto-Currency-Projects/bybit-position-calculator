@@ -6,7 +6,7 @@ Currently only supports [Bybit](https://www.bybit.com) exchange.
 
 ## Config
 
-Enter your account equity in ``config.json``
+Enter your available balance in ``config.json``
 
 ## Run
 

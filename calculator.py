@@ -1,12 +1,12 @@
 from colorama import Fore, Style
-from exchange import Bybit
+from exchange.bybit import Bybit
 
 
-def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange, stopLoss, numOfOrders):
+def calculatePosition(balanceUSD, ticker, side, leverage, riskPercent, orderRange, stopLoss, numOfOrders):
     """
     Parameters
     ----------
-        equityUSD : float
+        balanceUSD : float
         ticker : str.upper()
         side : str.upper()
         leverage : int
@@ -17,16 +17,17 @@ def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange
     Return
     ------
         {
-            "leverage": leverage,
-            "maxLeverage": maxLeverage,
-            "orders": orders,
-            "totalContracts": contracts,
-            "averageEntryPrice": averagePrice
+            "ticker": [str, str],
+            "leverage": int,
+            "maxLeverage": int,
+            "liqPrice": float,
+            "orders": [{"price": float, "qty": float}...],
+            "totalContracts": int,
+            "averageEntryPrice": float
         }
     """
 
-    # TODO: add doc
-    # TODO: move to main.py or somewhere not in calculatePosition()
+    # TODO: move verify() to main.py or somewhere not in calculatePosition()
 
     def verify():
         errors = []
@@ -60,7 +61,6 @@ def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange
         elif side == "SHORT":
             if stopLoss < orderRange[1]:
                 errors.append("SL cannot be lower or within shorting range")
-        
 
         if len(errors) != 0:
             print("\nErrors:")
@@ -71,11 +71,14 @@ def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange
             
     verify()
 
+    base = Bybit.getTickerBaseQuote(ticker)[0]
+    quote = Bybit.getTickerBaseQuote(ticker)[1]
+
     # General info
     interval = (orderRange[1] - orderRange[0]) / (numOfOrders - 1)
     orderPrices = [orderRange[0] + (interval * i) for i in range(numOfOrders)]
     averagePrice = sum(orderPrices) / len(orderPrices)
-    riskAmountBTC = (1 / averagePrice) * ((riskPercent * equityUSD) / 100)
+    riskAmountBase = (1 / averagePrice) * ((riskPercent * balanceUSD) / 100)
     
     # Verify liquidation price is not beyond stop price
     liqPrice = Bybit.liqPrice(side, ticker, leverage, averagePrice)
@@ -103,16 +106,17 @@ def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange
             if liqPriceMaxLeverage > stopLoss:
                 maxLeverage += 1
             else: break
-
     
     # Calculate number of contracts
     #   Contracts will keeping adding until the positions unrealized 
-    #   profit/loss is about equal to the amount of account willing 
-    #   to be risked.
+    #   profit/loss is equal or less than the amount of account willing to 
+    #   be risked or if the amount of contracts exceeds your account balance.
     contracts = 1
     while True:
         unrealizedPL = abs(Bybit.unrealizedPL(side, contracts, averagePrice, stopLoss))
-        if unrealizedPL < riskAmountBTC:
+        if (1 / averagePrice) * contracts > riskAmountBase:
+            break
+        if unrealizedPL < riskAmountBase:
             contracts += 1
         else: break
 
@@ -120,19 +124,10 @@ def calculatePosition(equityUSD, ticker, side, leverage, riskPercent, orderRange
     orders = [{"price":i, "qty": contracts / numOfOrders} for i in orderPrices]
     
     return {
-        # "userData": {
-        #     "equityUSD": equityUSD
-        #     "ticker": ticker,
-        #     "side": side,
-        #     "riskPercent": riskPercent
-        #     "leverage": leverage,
-        #     "riskPercent": riskPercent,
-        #     "orderRange": orderRange,
-        #     "stopLoss": stopLoss,
-        #     "numOfOrders": numOfOrders
-        # },
+        "ticker": [base, quote],
         "leverage": leverage,
         "maxLeverage": maxLeverage,
+        "liqPrice": liqPrice,
         "orders": orders,
         "risk": unrealizedPL,
         "totalContracts": contracts,
