@@ -1,4 +1,5 @@
-from calculator import calculatePosition
+from calculator import Calculator
+from exchange.bybit import Bybit
 from colorama import Fore, Style
 import json
 import os
@@ -6,52 +7,64 @@ import os
 # Allows for color support in cmd.exe
 os.system("color 0")
 
-print("\n{}Bybit Position Calculator{}\n".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
+# TODO: fix this entire thing, its pretty much pointless
+# put your bybit account balance here
+config = {
+    # eventual support for multiple exchanges... Kappa
+    "Profile": {
+        "Bybit": {
+            "balanceUSD": 208
+        }
+    }
+}
 
-# config.json doesn't have much of a purpose yet, if it fails to load
-# you can manually enter your account balance manually.
-def loadConfig():
-    """Load ...\\position-calculator\\config.json\\"""
-    try:
-        x = open("{}\\config.json".format(os.getcwd()))
-        x = json.load(x)
+
+# TODO: does colour really matter, get a web interface already...
+print("{}========================={}".format(Fore.LIGHTBLACK_EX, Style.RESET_ALL))
+print("Bybit Position Calculator".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
+print("{}========================={}\n".format(Fore.LIGHTBLACK_EX, Style.RESET_ALL))
+
+
+def enterValues():
+        # TODO: whats better, a class or a dictionary? idk
+    class Input:
+        ticker = input("Ticker: ").upper()
+        side = input("Side (long/short): ").upper()
+        leverage = int(input("Leverage: "))
+        riskPercent = float(input("Percentage of account to risk: "))
+        orderRange = [float(input("Start Price: ")), float(input("End Price: "))]
+        stopLoss = float(input("Stop-Loss Price: "))
+        numOfOrders = int(input("Total number of orders to generate: "))
+    return Input
+
+
+while True:
+    try: 
+        Input = enterValues()
+        break
     except Exception as e:
-        print("{}Failed to load config.json\n{}{}".format(Fore.RED, e, Style.RESET_ALL))
-        x = {"balanceUSD": float(input("Enter your account equity manually: "))}
-    return x
+        print("{}{}{}".format(Fore.RED, e, Style.RESET_ALL))
+    
+calculator = Calculator(config["Profile"]["Bybit"]["balanceUSD"],
+                        Input.ticker, Input.side, Input.leverage, Input.riskPercent, Input.orderRange,
+                        Input.stopLoss, Input.numOfOrders)
+position = calculator.calculatePosition()
 
-config = loadConfig()
-balanceUSD = config["balanceUSD"]
 
-ticker = input("Ticker: ").upper()
-side = input("Side (long/short): ").upper()
-leverage = int(input("Leverage: "))
-riskPercent = float(input("Percentage of account to risk: "))
-orderRange = [float(input("Start Price: ")), float(input("End Price: "))]
-stopLoss = float(input("Stop-Loss Price: "))
-numOfOrders = int(input("Total number of orders to generate: "))
-
-position = calculatePosition(balanceUSD, ticker, side, leverage, riskPercent, orderRange, stopLoss, numOfOrders)
-
-print("\n-----------------------------")
-
-print("\n{}Risk{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
+print("\n-----------------------------\n")
+print("Symbol: {}".format(Input.ticker))
+print()
+print("Total Contracts: {}".format(position["totalContracts"]))
+print("Average Entry Price: {}".format(position["averageEntryPrice"]))
+print("Maximum Leverage: {}".format(position["maxLeverage"]))
+print()
+[print("Price: {} Qty: {}".format(i["price"], i["qty"])) for i in position["orders"]]
+print()
 print("Risk: {} {}".format(position["risk"], position["ticker"][0]))
 print("Risk: {} USD".format(position["risk"] * position["averageEntryPrice"]))
-
-print("\n{}Leverage{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
-print("Current Leverage: {}".format(leverage))
-print("Max Leverage: {}".format(position["maxLeverage"]))
-
-print("\n{}Stop{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
-print("Stop Price: {}".format(stopLoss))
-print("Distance to Stop: {} / {:.2f}%".format(abs(position["averageEntryPrice"] - stopLoss), abs((position["averageEntryPrice"] - stopLoss) / stopLoss)))
-
-print("\n{}Position{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
-print("Average Entry Price: {}".format(position["averageEntryPrice"]))
-print("Total Contracts: {}".format(position["totalContracts"]))
-print("Liq Price: {}".format(position["liqPrice"]))
-
-print("\n{}Orders{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
-[print("Price: {} Qty: {}".format(i["price"], i["qty"])) for i in position["orders"]]
+print("Account Risk: {:.2f}%".format(position["riskPercent"]))
+print()
+print("Stop: {}".format(Input.stopLoss))
+print("Distance to stop: {} / {:.2f}%".format(abs(position["averageEntryPrice"] - Input.stopLoss), 100 * (abs(position["averageEntryPrice"] - Input.stopLoss) / Input.stopLoss)))
+print("Liquidation Price: {}".format(position["liqPrice"]))
 exit()

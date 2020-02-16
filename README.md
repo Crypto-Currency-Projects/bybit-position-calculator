@@ -4,9 +4,9 @@ Currently only supports [Bybit](https://www.bybit.com) exchange.
 
 ![example_cmd](example_cmd.png)
 
-## Config
+## Usage
 
-Enter your available balance in ``config.json``
+Enter your Bybit account balance in `main.py`
 
 ## Run
 

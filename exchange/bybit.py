@@ -40,55 +40,83 @@ class Bybit:
     @staticmethod
     def initialMargin(contracts, averagePrice, leverage):
         """
+        # Initial Margin
+        
         https://help.bybit.com/hc/en-us/articles/360007133254-Initial-Margin
+        
+        ## Parameters
+        
+        ```txt
+        contracts       int
+        averagePrice    num
+        leverage        int
+        ```
+        
+        ## Return
+        
+        `float`
         """
         return contracts / (averagePrice * leverage)
     
     @staticmethod
     def maintenanceMarginRate(ticker):
         """
-        Maintenance Margin Rate
-        -----------------------
+        # Maintenance Margin Rate
+        
+        Returns the maintenance margin rate for the selected ticker
+        
         https://help.bybit.com/hc/en-us/articles/360007133274-Maintenance-Margin
 
-        Return
-        ------
-            float
+        ## Parameters
+        
+        ```txt
+        ticker  str
+        ```
+        
+        ## Return
+        
+        `float`
         """
         return Bybit.exchangeInfo[ticker]["maintenanceMarginRate"]
 
     @staticmethod
     def maintenanceMargin(ticker, contracts, averagePrice):
         """
-        Maintenance Margin
-        ------------------
-        https://help.bybit.com/hc/en-us/articles/360007133274-Maintenance-Margin
-
-        Calculation
-        -----------
-            maintenanceMargin = (contracts / averagePrice) * maintenanceMarginRate
+        # Maintenance Margin
         
-        Return
-        ------
-            float
+        `Maintenance Margin = (Contracts / Order Price) * Maintenance Margin Rate`
+        
+        https://help.bybit.com/hc/en-us/articles/360007133274-Maintenance-Margin
+        
+        ## Return
+        
+        `float`
         """
         return (contracts / averagePrice) * Bybit.maintenanceMarginRate(ticker)
 
     @staticmethod
     def liqPrice(side, ticker, leverage, averagePrice):
         """
-        Liquidation Price
-        -----------------
+        # Liquidation Price
+        
+        Long Position: `LP = (averagePrice * leverage) / (leverage + 1 - (maintenanceMarginRate * leverage))`
+        
+        Short Position: `LP = (averagePrice * leverage) / (leverage - 1 + (maintenanceMarginRate * leverage))`
+        
         https://help.bybit.com/hc/en-us/articles/360007206554-Liquidation
 
-        Calculation
-        -----------
-            POSITION LONG: LP = (averagePrice * leverage) / (leverage + 1 - (maintenanceMarginRate * leverage))
-            POSITION SHORT: LP = (averagePrice * leverage) / (leverage - 1 + (maintenanceMarginRate * leverage))
-
-        Return
-        ------
-            float
+        ## Parameters
+        
+        ```txt
+        side            str
+        ticker          str
+        leverage        int
+        averagePrice    num
+        ```
+        
+        ## Return
+        
+        `float`
         """
         marginRate = Bybit.maintenanceMarginRate(ticker)
         if side == Bybit.SIDE_LONG:
@@ -101,14 +129,13 @@ class Bybit:
     @staticmethod
     def unrealizedPL(side, contracts, averagePrice, lastPrice):
         """
-        Unrealized Profit/Loss
-        ----------------------
-        https://help.bybit.com/hc/en-us/articles/360013263213-Calculation-of-Unrealized-Profit-Loss
+        # Unrealized Profit/Loss
+        
+        Long Position: `UPL = contracts * ((1 / averagePrice) - (1 / lastPrice))`
+        
+        Short Position: `UPL = contracts * ((1 / lastPrice) - (1 / averagePrice))`
 
-        Calculation
-        -----------
-            POSITION LONG: PL = contracts * ((1 / averagePrice) - (1 / lastPrice))
-            POSITION SHORT: PL = contracts * ((1 / lastPrice) - (1 / averagePrice))
+        https://help.bybit.com/hc/en-us/articles/360013263213-Calculation-of-Unrealized-Profit-Loss
 
         Return
         ------
@@ -120,7 +147,6 @@ class Bybit:
             pl = contracts * ((1 / lastPrice) - (1 / averagePrice))
         else:
             raise Exception("param [side] not valid")
-
         return pl
 
     @staticmethod
@@ -128,9 +154,7 @@ class Bybit:
         """
         Gets the base and quote currency of ticker
 
-        Return
-        ------
-            list
+        Return: `[str, str]`
         """
         return [Bybit.exchangeInfo[ticker]["base"], Bybit.exchangeInfo[ticker]["quote"]]
 
