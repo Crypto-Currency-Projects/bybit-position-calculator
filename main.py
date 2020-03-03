@@ -7,56 +7,49 @@ import os
 # Allows for color support in cmd.exe
 os.system("color 0")
 
-# TODO: fix this entire thing, its pretty much pointless
 # put your bybit account balance here
-config = {
-    # eventual support for multiple exchanges... Kappa
-    "Profile": {
-        "Bybit": {
-            "balanceUSD": 208
-        }
-    }
-}
+# ↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+balanceUSD = 350
+# ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 
-# TODO: does colour really matter, get a web interface already...
-print("{}========================={}".format(Fore.LIGHTBLACK_EX, Style.RESET_ALL))
-print("Bybit Position Calculator".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
-print("{}========================={}\n".format(Fore.LIGHTBLACK_EX, Style.RESET_ALL))
+print()
+print("{}Bybit Position Calculator{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
+print()
 
 
 def enterValues():
-        # TODO: whats better, a class or a dictionary? idk
-    class Input:
-        ticker = input("Ticker: ").upper()
-        side = input("Side (long/short): ").upper()
-        leverage = int(input("Leverage: "))
-        riskPercent = float(input("Percentage of account to risk: "))
-        orderRange = [float(input("Start Price: ")), float(input("End Price: "))]
-        stopLoss = float(input("Stop-Loss Price: "))
-        numOfOrders = int(input("Total number of orders to generate: "))
-    return Input
+    values = {
+        "symbol": input("Symbol: ").upper(),
+        "side": input("Side (long/short): ").upper(),
+        "riskPercent": float(input("Risk Percentage: ")),
+        "orderRange": [float(input("Start Price: ")), float(input("Stop Price: "))],
+        "stopLoss": float(input("Stop Loss: ")),
+        "numOfOrders": int(input("Number of Orders: "))
+    }
+    return values
 
 
 while True:
     try: 
-        Input = enterValues()
+        values = enterValues()
+
+        calculator = Calculator(balanceUSD, values["symbol"], values["side"], 
+                                values["riskPercent"], values["orderRange"], 
+                                values["stopLoss"], values["numOfOrders"])
+                               
+        position = calculator.calculatePosition()
         break
     except Exception as e:
         print("{}{}{}".format(Fore.RED, e, Style.RESET_ALL))
-    
-calculator = Calculator(config["Profile"]["Bybit"]["balanceUSD"],
-                        Input.ticker, Input.side, Input.leverage, Input.riskPercent, Input.orderRange,
-                        Input.stopLoss, Input.numOfOrders)
-position = calculator.calculatePosition()
 
 
 print("\n-----------------------------\n")
-print("Symbol: {}".format(Input.ticker))
+print("Symbol: {}".format(values["symbol"]))
 print()
 print("Total Contracts: {}".format(position["totalContracts"]))
 print("Average Entry Price: {}".format(position["averageEntryPrice"]))
-print("Maximum Leverage: {}".format(position["maxLeverage"]))
+print("Leverage: {}x".format(position["leverage"]))
 print()
 [print("Price: {} Qty: {}".format(i["price"], i["qty"])) for i in position["orders"]]
 print()
@@ -64,7 +57,7 @@ print("Risk: {} {}".format(position["risk"], position["ticker"][0]))
 print("Risk: {} USD".format(position["risk"] * position["averageEntryPrice"]))
 print("Account Risk: {:.2f}%".format(position["riskPercent"]))
 print()
-print("Stop: {}".format(Input.stopLoss))
-print("Distance to stop: {} / {:.2f}%".format(abs(position["averageEntryPrice"] - Input.stopLoss), 100 * (abs(position["averageEntryPrice"] - Input.stopLoss) / Input.stopLoss)))
+print("Stop: {}".format(values["stopLoss"]))
+print("Distance to stop: {} / {:.2f}%".format(abs(position["averageEntryPrice"] - values["stopLoss"]), 100 * (abs(position["averageEntryPrice"] - values["stopLoss"]) / values["stopLoss"])))
 print("Liquidation Price: {}".format(position["liqPrice"]))
 exit()

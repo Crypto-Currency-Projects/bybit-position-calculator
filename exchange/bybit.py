@@ -42,15 +42,13 @@ class Bybit:
         """
         # Initial Margin
         
+        `Initial Margin = Contracts / (AveragePrice * Leverage)`
+        
         https://help.bybit.com/hc/en-us/articles/360007133254-Initial-Margin
         
         ## Parameters
         
-        ```txt
-        contracts       int
-        averagePrice    num
-        leverage        int
-        ```
+        `contracts: int` `averagePrice: num` `leverage: int`
         
         ## Return
         
@@ -69,9 +67,7 @@ class Bybit:
 
         ## Parameters
         
-        ```txt
-        ticker  str
-        ```
+        `ticker: str`
         
         ## Return
         
@@ -87,6 +83,10 @@ class Bybit:
         `Maintenance Margin = (Contracts / Order Price) * Maintenance Margin Rate`
         
         https://help.bybit.com/hc/en-us/articles/360007133274-Maintenance-Margin
+        
+        ## Paramters
+        
+        `ticker: str` `contracts: int` `averagePrice: num`
         
         ## Return
         
@@ -107,12 +107,7 @@ class Bybit:
 
         ## Parameters
         
-        ```txt
-        side            str
-        ticker          str
-        leverage        int
-        averagePrice    num
-        ```
+        `side: str` `ticker: str` `leverage: int` `averagePrice: num`
         
         ## Return
         
@@ -127,24 +122,28 @@ class Bybit:
         return lp
 
     @staticmethod
-    def unrealizedPL(side, contracts, averagePrice, lastPrice):
+    def unrealizedPL(side, contracts, averagePrice, closePrice):
         """
         # Unrealized Profit/Loss
         
-        Long Position: `UPL = contracts * ((1 / averagePrice) - (1 / lastPrice))`
+        Long Position: `UPL = contracts * ((1 / averagePrice) - (1 / closePrice))`
         
-        Short Position: `UPL = contracts * ((1 / lastPrice) - (1 / averagePrice))`
+        Short Position: `UPL = contracts * ((1 / closePrice) - (1 / averagePrice))`
 
         https://help.bybit.com/hc/en-us/articles/360013263213-Calculation-of-Unrealized-Profit-Loss
 
-        Return
-        ------
-            float
+        ## Paramters
+        
+        `side: str` `contracts: int` `averagePrice: num` `closePrice: num`
+        
+        ## Return
+        
+        `float`
         """
         if side == Bybit.SIDE_LONG:
-            pl = contracts * ((1 / averagePrice) - (1 / lastPrice))
+            pl = contracts * ((1 / averagePrice) - (1 / closePrice))
         elif side == Bybit.SIDE_SHORT:
-            pl = contracts * ((1 / lastPrice) - (1 / averagePrice))
+            pl = contracts * ((1 / closePrice) - (1 / averagePrice))
         else:
             raise Exception("param [side] not valid")
         return pl
