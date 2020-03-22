@@ -1,21 +1,16 @@
-from calculator import Calculator
-from exchange.bybit import Bybit
-from colorama import Fore, Style
-import json
+from position_calculator import positionCalculator
 import os
 
-# Allows for color support in cmd.exe
+
 os.system("color 0")
 
-# put your bybit account balance here
-# ↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-balanceUSD = 350
-# ↑↑↑↑↑↑↑↑↑↑↑↑↑↑
-
-
 print()
-print("{}Bybit Position Calculator{}".format(Fore.LIGHTCYAN_EX, Style.RESET_ALL))
+print("Bybit Position Calculator")
 print()
+
+# Put your account balance here in USD
+balanceUSD = 245 # ← ← ← ← ← ← ← ← ← ←
+# Put your account balance here in USD
 
 
 def enterValues():
@@ -30,20 +25,15 @@ def enterValues():
     return values
 
 
-while True:
-    try: 
-        values = enterValues()
+values = enterValues()
 
-        calculator = Calculator(balanceUSD, values["symbol"], values["side"], 
-                                values["riskPercent"], values["orderRange"], 
-                                values["stopLoss"], values["numOfOrders"])
-                               
-        position = calculator.calculatePosition()
-        break
-    except Exception as e:
-        print("{}{}{}".format(Fore.RED, e, Style.RESET_ALL))
+position = positionCalculator(
+    balanceUSD, values["symbol"], values["side"], values["riskPercent"], 
+    values["orderRange"], values["stopLoss"], values["numOfOrders"]
+)
 
 
+# Output
 print("\n-----------------------------\n")
 print("Symbol: {}".format(values["symbol"]))
 print()
@@ -53,7 +43,7 @@ print("Leverage: {}x".format(position["leverage"]))
 print()
 [print("Price: {} Qty: {}".format(i["price"], i["qty"])) for i in position["orders"]]
 print()
-print("Risk: {} {}".format(position["risk"], position["ticker"][0]))
+print("Risk: {} {}".format(position["risk"], position["symbol"][0]))
 print("Risk: {} USD".format(position["risk"] * position["averageEntryPrice"]))
 print("Account Risk: {:.2f}%".format(position["riskPercent"]))
 print()
