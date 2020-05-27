@@ -4,13 +4,13 @@ from exchange.bybit import Bybit, BybitCalculator
 def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange, stopLoss, numOfOrders):
     """
     Generates your position. yay!
-    
-    Parameters: `accountBalanceUSD: num` `symbol: str` `side: str` 
+
+    Parameters: `accountBalanceUSD: num` `symbol: str` `side: str`
     `riskPercent: num` `orderRange: [num, num]` `stopLoss: num`
     `numOfOrders: int`
-    
+
     Return `dict`
-    
+
     Example Return
     ```json
     {
@@ -25,26 +25,25 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
     }
     ```
     """
-    
+
     # Verify if the ticker entered is a valid ticker
     symbolInfo = Bybit.symbols()["result"]
     for i in symbolInfo:
-        if i["name"] == symbol: 
+        if i["name"] == symbol:
             symbolInfo = i
             break
-        else: raise Exception("Invalid symbol")
-    
+        else: return {"message": "Ticker not valid"}
+
     symbolList = [symbolInfo["base_currency"], symbolInfo["quote_currency"]]
-    
+
     interval = (orderRange[1] - orderRange[0]) / (numOfOrders - 1)
     orderPrices = [orderRange[0] + (interval * i) for i in range(numOfOrders)]
     averagePrice = sum(orderPrices) / len(orderPrices)
 
     riskAmount = (accountBalanceUSD * riskPercent) / 100
     riskAmountBase = (1 / averagePrice) * riskAmount
-    
-    leverage = 1
 
+    leverage = 1
     # Calculate the maximum leverage
     while True:
         liqPrice = BybitCalculator.liqPrice(side, symbol, leverage, averagePrice)
@@ -54,8 +53,10 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
             break
         else:
             leverage += 1
+            if leverage > 100:
+                return {"message": "Unable to find suitable leverage"}
     leverage -= 2  # provides a bit of leeway in case
-                    
+
     # Calculate number of contracts
     #   Number of contracts will keep adding from one until unrealized P/L
     #   between average entry and stop price match your account risk
@@ -68,26 +69,31 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
             break
         else:
             contracts += 1
-    
+
     # Generates orders
     #   Ensures equal distribution of contracts per orders.
     while contracts % numOfOrders > 0:
         contracts -= 1
+        if contracts < numOfOrders:
+            return {"message": "Unable to distribute contracts evenly"}
     orders = [{"price": i, "qty": contracts / numOfOrders} for i in orderPrices]
-    
+
     # Recalculates your account risk
     liqPrice = BybitCalculator.liqPrice(side, symbol, leverage, averagePrice)
     unrealizedPL = abs(BybitCalculator.unrealizedPL(side, contracts, averagePrice, stopLoss))
     balanceBase = (1 / averagePrice) * accountBalanceUSD
     riskPercentRC = (unrealizedPL * 100) / balanceBase
-    
+
     return {
-        "symbol": [symbolList[0], symbolList[1]],
-        "leverage": leverage,
-        "liqPrice": liqPrice,
-        "orders": orders,
-        "risk": unrealizedPL,
-        "riskPercent": riskPercentRC,
-        "totalContracts": contracts,
-        "averageEntryPrice": averagePrice
+        "message": "OK",
+        "data": {
+            "symbol": [symbolList[0], symbolList[1]],
+            "leverage": leverage,
+            "liqPrice": liqPrice,
+            "orders": orders,
+            "risk": unrealizedPL,
+            "riskPercent": riskPercentRC,
+            "totalContracts": contracts,
+            "averageEntryPrice": averagePrice
+        }
     }
