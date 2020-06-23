@@ -11,9 +11,7 @@ function out(n) {
     var output = document.getElementById("output");
     output.innerHTML = "";
     console.log(n);
-    if (n["message"] != "OK") {
-        output.innerHTML = `<tr><td class="color-red">${n["message"]}</td></tr>`;
-    } else {
+    if (n["message"] == "OK") {
         var data = n["data"];
         var x = `<tr><th>Symbol</th><td>${data["symbol"][0] + data["symbol"][1]}</td></tr>`;
         x += `<tr><th>Total Contracts</th><td>${data["totalContracts"]}</td></tr>`;
@@ -23,7 +21,9 @@ function out(n) {
         for (var i of data["orders"]) {
             x += `<tr><td colspan="2">Price: ${i["price"]} Qty: ${i["qty"]}</td></tr>`;
         }
-        output.innerHTML = x
+        output.innerHTML = x;
+    } else {
+        output.innerHTML = `<tr><td class="color-red">${n["message"]}</td></tr>`;
     }
 }
 

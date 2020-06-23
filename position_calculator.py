@@ -1,27 +1,33 @@
-from exchange.bybit import Bybit, BybitCalculator
+from exchange.bybit import Bybit, BybitINVERSE
 
 
 def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange, stopLoss, numOfOrders):
     """
-    Generates your position. yay!
+    Generates your position
 
-    Parameters: `accountBalanceUSD: num` `symbol: str` `side: str`
-    `riskPercent: num` `orderRange: [num, num]` `stopLoss: num`
-    `numOfOrders: int`
+    ## Parameters
+    `accountBalanceUSD : float` Bybit account balance in USD
+    `symbol : string` ticker
+    `side : string` "LONG" or "SHORT"
+    `riskPercent : float` percentage of risk
+    `orderRange : list` [lower, upper]
+    `stopLoss : float` stop loss price
+    `numOfOrders : int` number of orders to generate
 
-    Return `dict`
-
-    Example Return
+    ## Return
     ```json
     {
-        "symbol": ["BTC", "USD"],
-        "leverage": 72,
-        "liqPrice": 5120.7068,
-        "orders": [{"price": 5153.5, "qty": 24}...],
-        "risk": 0.00021387,
-        "riskPercent": 0.56215287,
-        "totalContracts": 124,
-        "averageEntryPrice": 5156.25
+        "message": "OK",
+        "data": {
+            "symbol": [ "BTC", "USD" ],
+            "leverage": 69,
+            "liqPrice": 6969,
+            "orders": { "qty": 5, "price": 6969 },
+            "risk": 420,
+            "riskPercent": 2,
+            "totalContracts": 420,
+            "averageEntryPrice": 6969
+        }
     }
     ```
     """
@@ -46,7 +52,7 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
     leverage = 1
     # Calculate the maximum leverage
     while True:
-        liqPrice = BybitCalculator.liqPrice(side, symbol, leverage, averagePrice)
+        liqPrice = BybitINVERSE.liqPrice(side, symbol, leverage, averagePrice)
         if side == "LONG" and liqPrice > stopLoss:
             break
         elif side == "SHORT" and liqPrice < stopLoss:
@@ -63,7 +69,7 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
     #   percentage.
     contracts = 1
     while True:
-        unrealizedPL = abs(BybitCalculator.unrealizedPL(side, contracts, averagePrice, stopLoss))
+        unrealizedPL = abs(BybitINVERSE.unrealizedPL(side, contracts, averagePrice, stopLoss))
         if unrealizedPL > riskAmountBase:
             contracts -= 1
             break
@@ -79,8 +85,8 @@ def positionCalculator(accountBalanceUSD, symbol, side, riskPercent, orderRange,
     orders = [{"price": i, "qty": contracts / numOfOrders} for i in orderPrices]
 
     # Recalculates your account risk
-    liqPrice = BybitCalculator.liqPrice(side, symbol, leverage, averagePrice)
-    unrealizedPL = abs(BybitCalculator.unrealizedPL(side, contracts, averagePrice, stopLoss))
+    liqPrice = BybitINVERSE.liqPrice(side, symbol, leverage, averagePrice)
+    unrealizedPL = abs(BybitINVERSE.unrealizedPL(side, contracts, averagePrice, stopLoss))
     balanceBase = (1 / averagePrice) * accountBalanceUSD
     riskPercentRC = (unrealizedPL * 100) / balanceBase
 
