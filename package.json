@@ -2,7 +2,7 @@
   "name": "bybit-position-calculator",
   "version": "2.0.0",
   "author": "stdafx-h",
-  "description": "Tool used to create new positions on [Bybit](https://www.bybit.com). Calculates maximum leverage and orders to be placed using a user defined range and a user defined stop loss.",
+  "description": "Bybit Risk/Position Calculator",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {

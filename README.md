@@ -1,7 +1,7 @@
 # bybit-position-calculator
 
-Tool used to create new positions on [Bybit](https://www.bybit.com). Calculates maximum leverage and orders to be placed using a user defined range and a user defined stop loss.
+Tool used to create new positions on [Bybit](https://www.bybit.com). Generates orders and calculates maximum leverage using a user defined order range and stop loss.
 
-## Example
+**Only supports Bybit Inverse Contract; Not USDT Perp.**
 
-![example](example.png)
+![input](example.png)
