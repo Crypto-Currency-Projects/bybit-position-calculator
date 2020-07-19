@@ -13,17 +13,12 @@
 </template>
 
 <script>
-  import SystemInformation from './LandingPage/SystemInformation'
   import PositionCalculator from './PositionCalculator/PositionCalculator'
 
   export default {
     name: 'landing-page',
-    components: { SystemInformation, PositionCalculator },
-    methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      }
-    }
+    components: { PositionCalculator },
+    methods: {}
   }
 </script>
 

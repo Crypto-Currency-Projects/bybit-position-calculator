@@ -62,24 +62,24 @@
             <tr><th class="title" colspan="3">Invidual Orders</th></tr>
             <tr><td colspan="3">These orders are to be placed in bybit; dont forget about your stop loss!</td></tr>
             <tr v-for="(order, num) in pc['orders']">
-              <td>{{num + 1}}</td>
-              <td>Price: {{order.price}}</td>
-              <td>Qty: {{order.qty}}</td>
+              <td>{{ num + 1 }}</td>
+              <td>Price: {{ order.price }}</td>
+              <td>Qty: {{ order.qty }}</td>
             </tr>
           </table>
         </td>
       </tr>
       <tr>
         <td>Leverage</td>
-        <td class="number">{{pc["leverage"]}}x</td>
+        <td class="number">{{ pc["leverage"] }}x</td>
       </tr>
       <tr>
         <td>Total Contracts</td>
-        <td class="number">{{pc["totalContracts"]}}</td>
+        <td class="number">{{ pc["totalContracts"] }}</td>
       </tr>
       <tr>
         <td>Average Entry Price</td>
-        <td class="number">{{pc["averagePrice"]}}</td>
+        <td class="number">{{ pc["averagePrice"] }}</td>
       </tr>
     </table>
   </div>
