@@ -6,7 +6,6 @@
         <span class="title">Bybit Position Calculator</span>
       </header>
       <main>
-        <h1>Inverse Contract</h1>
         <position-calculator></position-calculator>
       </main>
     </body>
@@ -54,6 +53,7 @@
     font-family: 'Source Sans Pro', sans-serif;
     color: rgba(255, 255, 255, 0.87);
     background-color: #0E0E10;
+    font-size: 14px;
   }
 
   main {
@@ -87,9 +87,18 @@
     border-radius: 5px;
     box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.3);
     width: auto;
+    margin: 10px 5px 10px 5px;
   }
   tr, th, td {
     padding: 10px;
+  }
+  td.number {
+    text-align: right;
+    font-family: 'Fira Mono', monospace;
+  }
+  th.title {
+    font-size: 16px;
+    font-weight: 700;
   }
 
   select {
@@ -106,11 +115,6 @@
 
   option {
     background-color: #212121;
-  }
-
-  td th.number {
-    text-align: right;
-    font-family: 'Fira Mono', monospace;
   }
 
   input {

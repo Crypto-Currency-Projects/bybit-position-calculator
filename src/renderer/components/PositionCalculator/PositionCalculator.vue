@@ -1,55 +1,85 @@
 <template>
   <div class="container">
     <table>
+      <tr><th class="title" colspan="2">Inverse Contract</th></tr>
       <tr>
-        <th>Ticker</th>
-        <th>
-          <select v-model="symbol">
-            <option selected>BTCUSD</option>
-            <option>ETHUSD</option>
-            <option>XRPUSD</option>
-            <option>EOSUSD</option>
-          </select>
-        </th>
+        <td>Ticker / Side</td>
+        <td>
+          <span>
+            <select v-model="symbol" >
+              <option value="" disabled hidden>Select Ticker</option>
+              <option>BTCUSD</option>
+              <option>ETHUSD</option>
+              <option>XRPUSD</option>
+              <option>EOSUSD</option>
+            </select>
+          </span>
+          <span>
+            <select v-model="side">
+              <option value="" disabled hidden>Side</option>
+              <option>LONG</option>
+              <option>SHORT</option>
+            </select>
+          </span>
+        </td>
       </tr>
       <tr>
-        <th>Long / Short</th>
-        <th>
-          <select v-model="side">
-            <option selected>LONG</option>
-            <option>SHORT</option>
-          </select>
-        </th>
+        <td>Account Balance (USD)</td>
+        <td><input class="number" type="number" v-model.number="balance"></td>
       </tr>
       <tr>
-        <th>Account Balance</th>
-        <th><input class="number" type="number" v-model.number="balance"></th>
+        <td>Risk (%)</td>
+        <td><input class="number" type="number" v-model.number="risk"></td>
       </tr>
       <tr>
-        <th>Risk (%)</th>
-        <th><input class="number" type="number" v-model.number="risk"></th>
+        <td>Start Price</td>
+        <td><input class="number" type="number" v-model.number="start"></td>
       </tr>
       <tr>
-        <th>Start Price</th>
-        <th><input class="number" type="number" v-model.number="start"></th>
+        <td>End Price</td>
+        <td><input class="number" type="number" v-model.number="end"></td>
       </tr>
       <tr>
-        <th>End Price</th>
-        <th><input class="number" type="number" v-model.number="end"></th>
+        <td>Stop Loss Price</td>
+        <td><input class="number" type="number" v-model.number="stop"></td>
       </tr>
       <tr>
-        <th>Stop Loss Price</th>
-        <th><input class="number" type="number" v-model.number="stop"></th>
+        <td>Number of Orders</td>
+        <td><input class="number" type="number" v-model.number="orders"></td>
       </tr>
       <tr>
-        <th>Number of Orders</th>
-        <th><input class="number" type="number" v-model.number="orders"></th>
-      </tr>
-      <tr>
-        <th></th>
-        <th>
+        <td></td>
+        <td>
           <button v-on:click="calculatePosition()">Submit</button>
-        </th>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr><th class="title" colspan="2">Position Information</th></tr>
+      <tr>
+        <td colspan="2">
+          <table>
+            <tr><th class="title" colspan="3">Invidual Orders</th></tr>
+            <tr><td colspan="3">These orders are to be placed in bybit; dont forget about your stop loss!</td></tr>
+            <tr v-for="(order, num) in pc['orders']">
+              <td>{{num + 1}}</td>
+              <td>Price: {{order.price}}</td>
+              <td>Qty: {{order.qty}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>Leverage</td>
+        <td class="number">{{pc["leverage"]}}x</td>
+      </tr>
+      <tr>
+        <td>Total Contracts</td>
+        <td class="number">{{pc["totalContracts"]}}</td>
+      </tr>
+      <tr>
+        <td>Average Entry Price</td>
+        <td class="number">{{pc["averagePrice"]}}</td>
       </tr>
     </table>
   </div>
@@ -66,7 +96,15 @@ export default {
       start: 0,
       end: 0,
       stop: 0,
-      orders: 0
+      orders: 0,
+      pc: {
+        leverage: 0,
+        liqPrice: 0,
+        orders: [],
+        risk: 0,
+        totalContracts: 0,
+        averagePrice: 0
+      }
     }
   },
   methods: {
@@ -149,7 +187,8 @@ export default {
         orders.push({'price': price, 'qty': contracts / this.orders})
       }
 
-      var ret = {
+      this.pc = {
+        active: true,
         leverage: leverage,
         liqPrice: liqPrice,
         orders: orders,
@@ -157,11 +196,14 @@ export default {
         totalContracts: contracts,
         averagePrice: averagePrice
       }
-      console.log(ret)
+
+      console.log(this.pc)
     }
   }
 }
 </script>
 <style>
-
+.container {
+  display: inline-flex;
+}
 </style>
