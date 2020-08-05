@@ -11,11 +11,6 @@ export default new Router({
       component: require('@/components/LandingPage').default
     },
     {
-      path: '/PositionCalculator',
-      name: 'position-calculator',
-      component: require('@/components/PositionCalculator/PositionCalculator')
-    },
-    {
       path: '*',
       redirect: '/'
     }

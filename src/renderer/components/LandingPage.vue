@@ -1,30 +1,28 @@
 <template>
   <div id="wrapper">
-    <body>
-      <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
-      <header>
-        <span class="title">Bybit Position Calculator</span>
-      </header>
-      <main>
-        <position-calculator></position-calculator>
-      </main>
-    </body>
+    <header>
+      <span class="title">Bybit Position Calculator</span>
+    </header>
+    <main>
+      <inverse></inverse>
+      <usdt></usdt>
+    </main>
   </div>
 </template>
 
 <script>
-  import PositionCalculator from './PositionCalculator/PositionCalculator'
+  import Inverse from './Calculator/Inverse';
+  import Usdt from './Calculator/Usdt';
 
   export default {
     name: 'landing-page',
-    components: { PositionCalculator },
-    methods: {}
-  }
+    components: { Inverse, Usdt },
+    methods: {},
+  };
 </script>
 
 <style>
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-  /* https://colorhunt.co/palette/69360 */
 
   * {
     box-sizing: border-box;
@@ -127,7 +125,6 @@
   input:hover {
     border: 1px solid rgba(255, 255, 255, 0.75)
   }
-
 
   button {
     background-color: transparent;
