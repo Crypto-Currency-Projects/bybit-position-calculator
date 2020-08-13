@@ -30,13 +30,8 @@ export default {
           // Liquidation Price = Entry Price * (1 - Initial Margin Rate + Maintenance Margin Rate) - Extra Margin Added/ Contract Size
           const imr = this.initialMarginRate(leverage);
           const mmr = this.maintenanceMarginRate();
-          var lp;
-          if (side === 'LONG') {
-            lp = entryPrice * (1 - imr + mmr);
-          } else {
-            lp = entryPrice * (1 + imr - mmr);
-          }
-          return lp
+          if (side === 'LONG') { return entryPrice * (1 - imr + mmr); }
+          else { return entryPrice * (1 + imr - mmr); }
         }
       },
     });

@@ -86,6 +86,10 @@
         <td>Average Entry Price</td>
         <td class="number">{{ out["averagePrice"] }}</td>
       </tr>
+      <tr>
+        <td>Estimated Liq Price</td>
+        <td class="number">{{ out["liqPrice"] }}</td>
+      </tr>
     </table>
   </div>
 </template>
