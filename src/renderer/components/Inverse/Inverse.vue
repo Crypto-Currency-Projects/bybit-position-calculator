@@ -66,7 +66,7 @@
               <th class="number">Price</th>
               <th class="number">Qty</th>
             </tr>
-            <tr v-for="(order, num) in out['orders']">
+            <tr v-for="(order, num) in out.orders">
               <td>{{ num + 1 }}</td>
               <td class="number">{{ order.price }}</td>
               <td class="number">{{ order.qty }}</td>
@@ -75,20 +75,24 @@
         </td>
       </tr>
       <tr>
-        <td>Maximum Leverage</td>
-        <td class="number">{{ out["leverage"] }}x</td>
+        <td>Recommended Leverage</td>
+        <td class="number">{{ out.leverage }}x</td>
+      </tr>
+      <tr>
+        <td>Risk</td>
+        <td class="number">USD {{ out.risk }} ({{ Math.round(out.riskPercent * 100) / 100 }}%)</td>
       </tr>
       <tr>
         <td>Total Contracts</td>
-        <td class="number">{{ out["totalContracts"] }}</td>
+        <td class="number">{{ out.totalContracts }}</td>
       </tr>
       <tr>
         <td>Average Entry Price</td>
-        <td class="number">{{ out["averagePrice"] }}</td>
+        <td class="number">{{ out.averagePrice }}</td>
       </tr>
       <tr>
         <td>Estimated Liq Price</td>
-        <td class="number">{{ out["liqPrice"] }}</td>
+        <td class="number">{{ out.liqPrice }}</td>
       </tr>
     </table>
   </div>

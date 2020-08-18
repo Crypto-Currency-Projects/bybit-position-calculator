@@ -14,9 +14,11 @@ export default {
           // LONG (entryPrice * leverage) / (leverage + 1 - (maintenanceMarginRate * leverage))
           // SHORT (entryPrice * leverage) / (leverage - 1 + (maintenanceMarginRate * leverage))
           const mmr = this.maintenanceMarginRate(ticker);
-          const base = (entryPrice * leverage)
-          if (side == 'LONG') { return base / (leverage + 1 - (mmr * leverage)); }
-          else { return base / (leverage - 1 + (mmr * leverage)); }
+          if (side == 'LONG') {
+            return (entryPrice * leverage) / (leverage + 1 - (mmr * leverage));
+          } else {
+            return (entryPrice * leverage) / (leverage - 1 + (mmr * leverage));
+          }
         }
       },
     });

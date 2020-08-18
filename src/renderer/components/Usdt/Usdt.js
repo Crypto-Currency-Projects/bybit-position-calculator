@@ -24,18 +24,12 @@ export default {
     calculatePosition() {
       const orderRange = (this.start < this.end) ? [this.start, this.end] : [this.end, this.start];
       const interval = (orderRange[1] - orderRange[0]) / (this.orders - 1);
-      var orderPrices = [];
-      for (var i in this.$python.range(this.orders)) {
-        orderPrices.push(orderRange[0] + (interval * i));
-      }
+      const orderPrices = this.$python.range(this.orders).map((x) => { return orderRange[0] + (interval * x) })
       const averagePrice = this.$python.sum(orderPrices) / orderPrices.length;
 
       const riskAmount = (this.balance * this.risk) / 100;
 
-      /* Calculate number of contracts
-      Number of contracts will keep adding from one until unrealized P/L
-      between average entry and stop price match your account risk
-      percentage. */
+      // Calculate number of contracts
       let contracts = this.orders * 0.001;
       const step = this.orders * 0.001;
       let unrealizedPL;
@@ -55,7 +49,7 @@ export default {
       while (true) {
         liqPrice = this.$bybitUSDT.liqPrice(this.side, averagePrice, leverage);
         if (this.side === 'LONG' && liqPrice > this.stop || this.side === 'SHORT' && liqPrice < this.stop) {
-          leverage -= 1;
+          leverage -= 2;
           break;
         } else {
           leverage += 1;
@@ -67,18 +61,20 @@ export default {
       }
 
       // Generate Orders
-      let orders = [];
-      for (const price of orderPrices) {
-        orders.push({ price, qty: contracts / this.orders });
-      }
+      const orders = orderPrices.map((price) => { return { price, qty: contracts / this.orders }; })
+
+      // Recalculate liqPrice and risk
+      liqPrice = this.$bybitUSDT.liqPrice(this.side, averagePrice, leverage);
+      unrealizedPL = Math.abs(this.$bybitUSDT.unrealizedPL(this.side, contracts, averagePrice, this.stop));
 
       this.out = {
+        averagePrice: averagePrice,
         leverage: leverage,
         liqPrice: liqPrice,
         orders: orders,
         risk: unrealizedPL,
+        riskPercent: ((100 * unrealizedPL) / this.balance),
         totalContracts: contracts,
-        averagePrice: averagePrice,
       };
 
       console.log(this.out);
