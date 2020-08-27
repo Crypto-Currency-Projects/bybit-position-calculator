@@ -35,7 +35,7 @@ export default {
       while (true) {
         liqPrice = this.$bybitInverse.liqPrice(this.side, this.symbol, leverage, averagePrice);
         if (this.side === 'LONG' && liqPrice > this.stop || this.side === 'SHORT' && liqPrice < this.stop) {
-          leverage -= 2;
+          leverage -= 3;
           break;
         } else {
           leverage += 1;

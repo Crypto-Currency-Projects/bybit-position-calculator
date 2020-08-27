@@ -49,7 +49,7 @@ export default {
       while (true) {
         liqPrice = this.$bybitUSDT.liqPrice(this.side, averagePrice, leverage);
         if (this.side === 'LONG' && liqPrice > this.stop || this.side === 'SHORT' && liqPrice < this.stop) {
-          leverage -= 2;
+          leverage -= 3;
           break;
         } else {
           leverage += 1;
