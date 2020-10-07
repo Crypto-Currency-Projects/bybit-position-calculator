@@ -2,7 +2,6 @@ import Vue from 'vue'
 import axios from 'axios'
 
 import App from './App'
-import router from './router'
 
 import bybit from './plugins/bybit'
 import bybitUSDT from './plugins/bybitUSDT'
@@ -19,6 +18,5 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   components: { App },
-  router,
   template: '<App/>'
 }).$mount('#app')
