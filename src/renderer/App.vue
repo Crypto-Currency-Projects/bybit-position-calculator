@@ -1,31 +1,32 @@
 <template>
-  <div id="app">
-    <header>
-      <span class="title">Bybit Position Calculator</span>
-    </header>
-    <main>
-      <div class="grid-column">
-        <inverse></inverse>
-      </div>
-      <div class="grid-column">
-        <usdt></usdt>
-      </div>
-    </main>
-  </div>
+  <v-app>
+    <div id="header">
+      <v-app-bar
+      color="primary"
+      dense
+      dark
+      >
+        <v-toolbar-title>Bybit Position Calculator</v-toolbar-title>
+      </v-app-bar>
+    </div>
+    <v-main>
+      <notifications group="main" />
+      <position-calculator></position-calculator>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import Inverse from './components/Inverse'
-import Usdt from './components/Usdt'
+import positionCalculator from './components/PositionCalculator'
 
 export default {
   name: 'bybit-position-calculator',
-  components: { Inverse, Usdt }
+  components: { positionCalculator }
 }
 </script>
 
 <style lang="scss">
-:root {
+/* :root {
   --body-bg-color: #101014;
   --main-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.3);
   --main-bg-color: #18191F;
@@ -175,5 +176,5 @@ input:hover {
 }
 .color-red {
   color: var(--color-red)
-}
+}*/
 </style>

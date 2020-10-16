@@ -21,7 +21,7 @@ const { VueLoaderPlugin } = require('vue-loader')
  */
 
  // https://github.com/SimulatedGREG/electron-vue/issues/940
-let whiteListedModules = ['vue', 'axios', 'vue-electron', 'vue-router', 'vuex', 'vuex-electron', 'element-ui']
+let whiteListedModules = ['vue', 'axios', 'vue-electron', 'vue-router', 'vuex', 'vuex-electron', 'element-ui', 'vue-notification', 'vuetify']
 
 let rendererConfig = {
   devtool: '#cheap-module-eval-source-map',
