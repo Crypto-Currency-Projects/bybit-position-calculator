@@ -219,6 +219,7 @@ export default {
       // Calculate maximum leverage
       var leverage = 1
       var liqPrice
+      var maxLeverage = (this.ticker === 'BTCUSD') ? 100 : 50
       while (true) {
         liqPrice = this.$bybitInverse.liqPrice(side, this.ticker, leverage, averagePrice)
         if (side === 'LONG' && liqPrice > this.stop) {
@@ -229,8 +230,8 @@ export default {
           break
         } else {
           leverage += 1
-          if (leverage > 100) {
-            leverage = 100
+          if (leverage > maxLeverage) {
+            leverage = maxLeverage
             break
           }
         }
@@ -294,7 +295,7 @@ export default {
       // Calculate maximum leverage
       let leverage = 1
       let liqPrice
-      let maxLeverage = (this.ticker in ['BTCUSD', 'BTCUSDT']) ? 100 : 50
+      let maxLeverage = 100
       while (true) {
         liqPrice = this.$bybitUSDT.liqPrice(side, averagePrice, leverage)
         if (side === 'LONG' && liqPrice > this.stop) {
